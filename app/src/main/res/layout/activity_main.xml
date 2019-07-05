@@ -6,73 +6,44 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
-
-    <LinearLayout
-            android:id="@+id/buttons"
+    <Button
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="120dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-    >
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Login with default icon"
-                android:id="@+id/login_button"
-        />
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Login with icon resource"
-                android:id="@+id/login_with_icon_res_button"
-        />
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Login with icon url"
-                android:id="@+id/login_with_icon_url_button"
-        />
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Transfer"
-                android:id="@+id/request_transfer_button"
-        />
-
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Transfer resource icon"
-                android:id="@+id/request_transfer_button_with_meta_res"
-        />
-
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Transfer with url icon"
-                android:id="@+id/request_transfer_button_with_meta_url"
-        />
-    </LinearLayout>
+            android:text="Login"
+            android:id="@+id/login_button"
+            />
 
     <androidx.appcompat.widget.AppCompatTextView
-            android:layout_marginTop="32dp"
-            android:id="@+id/name_text"
-            app:layout_constraintTop_toBottomOf="@id/buttons"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/login_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:id="@+id/name_text"/>
 
     <androidx.appcompat.widget.AppCompatTextView
-            android:layout_marginTop="32dp"
-            android:id="@+id/pubkey_text"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pubkey_text"/>
+
+
+    <Button
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pubkey_text"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="Transfer"
+            android:id="@+id/request_transfer_button"
+            />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
