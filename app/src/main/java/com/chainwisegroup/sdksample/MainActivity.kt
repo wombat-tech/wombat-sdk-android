@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity() {
             result?.let{
                 broadcastTransaction(it.serializedTransaction,it.signatures)
             }
-            Log.d("SDK", "GOT SIGNATURES: ${result?.signatures?.joinToString()}")
         } else if (requestCode == 102 && resultCode == RESULT_OK) {
             val loginResult = Wombat.getLoginResultFromIntent(data)
             loginResult?.let{
@@ -78,7 +77,9 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun broadcastTransaction(serializedTX: String, singatures: List<String>){
+    fun broadcastTransaction(serializedTX: String, signatures: List<String>){
+        Log.d("SDK", "serialized tx: ${serializedTX}")
+        Log.d("SDK", "Signatures: ${signatures.joinToString()}")
         Toast.makeText(this,"TODO",Toast.LENGTH_SHORT).show()
     }
 }
