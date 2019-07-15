@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -23,7 +24,6 @@ public class Wombat {
 
 
     /**
-     *
      * @return an Intent to be used with {@link android.app.Activity#startActivityForResult(Intent, Integer)}
      */
     @NonNull
@@ -100,6 +100,7 @@ public class Wombat {
         return new TransactionSignResult(serializedTransaction, signatures);
     }
 
+
     /**
      * Retrieve the {@link LoginResult} after using {@link #getLoginIntent()}
      *
@@ -113,6 +114,26 @@ public class Wombat {
         String publicKey = intent.getStringExtra("eos_public_key");
         if (accountName == null || publicKey == null) return null;
         return new LoginResult(accountName, publicKey);
+    }
+
+
+    public static Intent getTransferIntent(String from, String to, String quantity, String memo, String contract, String title, String subTitle, String iconUri, int iconRes) {
+        Bundle transferData = new Bundle();
+        transferData.putString("from",from);
+        transferData.putString("to",to);
+        transferData.putString("quantity",quantity);
+        transferData.putString("memo",memo);
+        transferData.putString("contract",contract);
+        transferData.putString("title",title);
+        transferData.putString("subtitle",subTitle);
+        transferData.putString("icon_uri",iconUri);
+        transferData.putInt("icon_res",iconRes);
+
+        Intent intent = new Intent();
+        intent.setComponent(new ComponentName(wombatPackageName, "io.getwombat.android.sdk.activities.SDKSignatureRequestActivity"));
+        intent.putExtra("transfer", transferData);
+
+        return intent;
     }
 
 
