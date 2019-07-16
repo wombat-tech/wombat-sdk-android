@@ -4,14 +4,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import androidx.annotation.InspectableProperty;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
 public class Wombat {
-
-    private static String wombatPackageName = "io.getwombat.android.internal";
+    private static String wombatPackageName = "io.getwombat.android";
 
     public static Boolean isAvailable(Context context) {
         try {
