@@ -1,11 +1,11 @@
 ### Installation
-#### 1. Copy `wombatsdk.aar` from the [release section](https://github.com/wombat-tech/wombat-sdk-android/releases)  to `/app/libs` 
+1. Copy `wombatsdk.aar` from the [release section](https://github.com/wombat-tech/wombat-sdk-android/releases) to `/app/libs` 
+2. Add the library to Gradle
 
-#### 2. Add the library to gradle
 Add these to your `/app/build.gradle`
-```
-android{
-  
+```groovy
+android {
+
   ...
   
   repositories {
@@ -26,13 +26,14 @@ dependencies {
 ___
 
 ### Usage
-The SDK uses android's standard `startActivityForResult` -> `onActivityResult` flow. More details about this can be found in the [android developer docs](https://developer.android.com/training/basics/intents/result)
+The SDK uses Android's standard `startActivityForResult` -> `onActivityResult` flow. More details about this can be found in the [Android Developer docs](https://developer.android.com/training/basics/intents/result)
 
 #### Check availability
-```
+
+```java
 public class MyActivity extends Activity {
 
-  boolean isWombatAvailable(){
+  boolean isWombatAvailable() {
       return Wombat.isAvailable(this);
   }
 
@@ -40,21 +41,22 @@ public class MyActivity extends Activity {
 ```
 
 #### Login
-```
+
+```java
 public class MyActivity extends Activity {
   
-  // This can by any integer, only used to distinguish the cases in 'onActivityResult'
+  // This can be any integer, only used to distinguish the cases in 'onActivityResult'
   static int REQUEST_CODE_WOMBAT_LOGIN = 1;
   
   // Called to initiate the login process
-  void loginWithWombat(){
+  void loginWithWombat() {
     Intent loginIntent = Wombat.getLoginIntent();
     startActivityForResult(loginIntent, REQUEST_CODE_WOMBAT_LOGIN);
   }
   
-  //results will be returned in this callback 
+  // Results will be returned in this callback 
   @Override
-  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
+  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
       super.onActivityResult(requestCode, resultCode, data);
       
       if (requestCode == REQUEST_CODE_WOMBAT_LOGIN) {
@@ -71,28 +73,28 @@ public class MyActivity extends Activity {
 }
 ```
 
-#### Transaction Signing
-Wombat supports 2 different formats to sign transactions
+#### Transaction signing
+Wombat supports 2 different formats to sign transactions.
 
-#####  1. Raw Serialized Transactions as Hex string
+#####  1. Raw serialized transactions as hex string
 
-```
+```java
 public class MyActivity extends Activity {
  
-  // These can by any integers, only used to distinguish the cases in 'onActivityResult'
+  // These can be any integers, only used to distinguish the cases in 'onActivityResult'
   static int REQUEST_CODE_WOMBAT_LOGIN = 1;
   static int REQUEST_CODE_WOMBAT_SIGNATURE = 2;
  
   
-  void requestWombatTransaction(){
+  void requestWombatTransaction() {
     String transaction = ""; // TODO
     Intent signIntent = Wombat.getTransactionSignIntent(transaction);
     startActivityForResult(signIntent, REQUEST_CODE_WOMBAT_SIGNATURE);
   }
  
-  //results will be returned in this callback 
+  // Results will be returned in this callback 
   @Override
-  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
+  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
       super.onActivityResult(requestCode, resultCode, data);
       if (requestCode == REQUEST_CODE_WOMBAT_LOGIN) {
         // Handle login
@@ -111,10 +113,11 @@ public class MyActivity extends Activity {
 }
 ```
 
-##### 2. JSON String of actions
-You can also leave the serialization to wombat and only provide the actions to be included in the transaction.<br>
-For better readability, assume you have the following as a String containing a json array of actions:
-```
+##### 2. JSON string of actions
+You can also leave the serialization to Wombat and only provide the actions to be included in the transaction.<br>
+For better readability, assume you have the following as a string containing a JSON array of actions:
+
+```json
 [  
   {
     "account": "eosio.token",
@@ -134,23 +137,25 @@ For better readability, assume you have the following as a String containing a j
   }
 ]
 ```
+
 You can use it like this:
-```
+
+```java
 public class MyActivity extends Activity {
  
-  // These can by any integers, only used to distinguish the cases in 'onActivityResult'
+  // These can be any integers, only used to distinguish the cases in 'onActivityResult'
   static int REQUEST_CODE_WOMBAT_LOGIN = 1;
   static int REQUEST_CODE_WOMBAT_SIGNATURE = 2;
  
-  // call this using the above json string
-  void requestWombatTransaction(String jsonActions){
+  // Call this using the above JSON string
+  void requestWombatTransaction(String jsonActions) {
     Intent signIntent = Wombat.getActionListSignIntent(jsonActions);
     startActivityForResult(signIntent, REQUEST_CODE_WOMBAT_SIGNATURE);
   }
  
-  //results will be returned in this callback 
+  // Results will be returned in this callback 
   @Override
-  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
+  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
       super.onActivityResult(requestCode, resultCode, data);
       if (requestCode == REQUEST_CODE_WOMBAT_LOGIN) {
         // Handle login
@@ -168,4 +173,3 @@ public class MyActivity extends Activity {
   }
 }
 ```
-
