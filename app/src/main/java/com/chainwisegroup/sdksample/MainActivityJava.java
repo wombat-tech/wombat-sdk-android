@@ -33,9 +33,7 @@ public class MainActivityJava extends AppCompatActivity {
         requestTransferButton = findViewById(R.id.request_transfer_button);
         nameText = findViewById(R.id.name_text);
         pubkeyText = findViewById(R.id.pubkey_text);
-
         loginButton.setEnabled(Wombat.isAvailable(this));
-
         requestTransferButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
