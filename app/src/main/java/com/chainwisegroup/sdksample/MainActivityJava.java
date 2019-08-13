@@ -2,6 +2,7 @@ package com.chainwisegroup.sdksample;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -33,7 +34,7 @@ public class MainActivityJava extends AppCompatActivity {
         requestTransferButton = findViewById(R.id.request_transfer_button);
         nameText = findViewById(R.id.name_text);
         pubkeyText = findViewById(R.id.pubkey_text);
-        loginButton.setEnabled(Wombat.isAvailable(this));
+
         requestTransferButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,9 +52,22 @@ public class MainActivityJava extends AppCompatActivity {
         requestTransferButton.setEnabled(false);
     }
 
-    void loginWithWombat() {
+    //your current version
+    void oldLoginWithWombat(){
         Intent loginIntent = Wombat.getLoginIntent();
         startActivityForResult(loginIntent, REQUEST_CODE_WOMBAT_LOGIN);
+    }
+
+    //wrap it in this Wombat.isAvailable(Context)  is already in the provided SDK
+    void loginWithWombat() {
+        if(Wombat.isAvailable(this)){
+            Intent loginIntent = Wombat.getLoginIntent();
+            startActivityForResult(loginIntent, REQUEST_CODE_WOMBAT_LOGIN);
+        }else{
+            String wombatLink  = "https://play.google.com/store/apps/details?id=io.getwombat.android&referrer=utm_source%3Deos_knights_android%26utm_medium%3Dwallet_choice%26utm_campaign%3Deos_knights%26anid%3Dadmob";
+            Intent playStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(wombatLink));
+            startActivity(playStoreIntent);
+        }
     }
 
     void requestTransfer() {
