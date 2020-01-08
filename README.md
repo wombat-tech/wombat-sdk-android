@@ -78,6 +78,9 @@ Wombat supports 2 different formats to sign transactions.
 
 #####  1. Raw serialized transactions as hex string
 
+Use `Wombat.getTransactionSignIntent` and pass a fully serialized transaction as HEX string. The second parameter, "modifiable", signals Wombat that it may modify the transaction to
+provide CPU and NET for the user. This is done by adding an account controlled by Wombat as the first authorizer in the transaction.
+
 ```java
 public class MyActivity extends Activity {
  
@@ -88,7 +91,7 @@ public class MyActivity extends Activity {
   
   void requestWombatTransaction() {
     String transaction = ""; // TODO
-    Intent signIntent = Wombat.getTransactionSignIntent(transaction);
+    Intent signIntent = Wombat.getTransactionSignIntent(transaction, true);
     startActivityForResult(signIntent, REQUEST_CODE_WOMBAT_SIGNATURE);
   }
  

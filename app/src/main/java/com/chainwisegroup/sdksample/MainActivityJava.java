@@ -4,16 +4,19 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.List;
+
 import io.getwombat.androidsdk.LoginResult;
 import io.getwombat.androidsdk.TransactionSignResult;
 import io.getwombat.androidsdk.Wombat;
-
-import java.util.List;
 
 public class MainActivityJava extends AppCompatActivity {
     static final int REQUEST_CODE_WOMBAT_LOGIN = 1;
@@ -52,19 +55,13 @@ public class MainActivityJava extends AppCompatActivity {
         requestTransferButton.setEnabled(false);
     }
 
-    //your current version
-    void oldLoginWithWombat(){
-        Intent loginIntent = Wombat.getLoginIntent();
-        startActivityForResult(loginIntent, REQUEST_CODE_WOMBAT_LOGIN);
-    }
-
     //wrap it in this Wombat.isAvailable(Context)  is already in the provided SDK
     void loginWithWombat() {
-        if(Wombat.isAvailable(this)){
+        if (Wombat.isAvailable(this)) {
             Intent loginIntent = Wombat.getLoginIntent();
             startActivityForResult(loginIntent, REQUEST_CODE_WOMBAT_LOGIN);
-        }else{
-            String wombatLink  = "https://play.google.com/store/apps/details?id=io.getwombat.android&referrer=utm_source%3Deos_knights_android%26utm_medium%3Dwallet_choice%26utm_campaign%3Deos_knights%26anid%3Dadmob";
+        } else {
+            String wombatLink = "https://play.google.com/store/apps/details?id=io.getwombat.android&referrer=utm_source%3Deos_knights_android%26utm_medium%3Dwallet_choice%26utm_campaign%3Deos_knights%26anid%3Dadmob";
             Intent playStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(wombatLink));
             startActivity(playStoreIntent);
         }
@@ -94,6 +91,10 @@ public class MainActivityJava extends AppCompatActivity {
     }
 
     void broadcastTransaction(String serializedTransaction, List<String> signatures) {
+        Log.d("SDK", "Received result");
+        Log.d("SDK", "TX: " + serializedTransaction);
+        Log.d("SDK", "SIGS: " + signatures.toString());
+
         // TODO
     }
 
@@ -118,7 +119,7 @@ public class MainActivityJava extends AppCompatActivity {
             if (resultCode == Activity.RESULT_OK) {
                 TransactionSignResult result = Wombat.getTransactionSignResultFromIntent(data);
                 List<String> signatures = result.getSignatures();
-                String serializedTransaction = result.getSerializedTransaction(); // In this case this is the same as the requested hex string
+                String serializedTransaction = result.getSerializedTransaction(); // might differ from the requested transaction if you used Wombat.getTransactionSignIntent with modifiable = true
                 broadcastTransaction(serializedTransaction, signatures);
             }
         }
