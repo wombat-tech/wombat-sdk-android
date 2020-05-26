@@ -19,6 +19,30 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    flavorDimensions "network"
+    productFlavors {
+        net_main {
+            dimension "network"
+
+        }
+
+        net_test {
+            dimension "network"
+        }
+    }
+
+    sourceSets{
+        net_main {
+            java.srcDirs = ['src/mainnet/java']
+        }
+
+        net_test{
+            java.srcDirs = ['src/testnet/java']
+        }
+
+        main.java.srcDirs += ['src/main/java']
+    }
 }
 
 dependencies {
