@@ -50,7 +50,7 @@ public class MyActivity extends Activity {
   
   // Called to initiate the login process
   void loginWithWombat() {
-    Intent loginIntent = Wombat.getLoginIntent();
+    Intent loginIntent = Wombat.getLoginIntent(Blockchain.EOS); // or Blockchain.TELOS
     startActivityForResult(loginIntent, REQUEST_CODE_WOMBAT_LOGIN);
   }
   
@@ -91,7 +91,7 @@ public class MyActivity extends Activity {
   
   void requestWombatTransaction() {
     String transaction = ""; // TODO
-    Intent signIntent = Wombat.getTransactionSignIntent(transaction, true);
+    Intent signIntent = Wombat.getTransactionSignIntent(transaction, Blockchain.EOS, true);
     startActivityForResult(signIntent, REQUEST_CODE_WOMBAT_SIGNATURE);
   }
  
@@ -152,7 +152,7 @@ public class MyActivity extends Activity {
  
   // Call this using the above JSON string
   void requestWombatTransaction(String jsonActions) {
-    Intent signIntent = Wombat.getActionListSignIntent(jsonActions);
+    Intent signIntent = Wombat.getActionListSignIntent(jsonActions, Blockchain.EOS);
     startActivityForResult(signIntent, REQUEST_CODE_WOMBAT_SIGNATURE);
   }
  
