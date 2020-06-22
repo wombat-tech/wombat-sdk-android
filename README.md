@@ -176,3 +176,36 @@ public class MyActivity extends Activity {
   }
 }
 ```
+
+
+#### Arbitrary Signatures
+Wombat supports signing of arbitrary text, just as scatter does
+By now, this will always prompt the user with the requested text and ask them to sign.
+
+```java
+public class MyActivity extends Activity {
+
+  static int REQUEST_CODE_WOMBAT_ARBITRARY_SIGNATURE = 3;
+
+  void requestWombatArbitrarySignature(String data) {
+    Intent intent = Wombat.getArbitrarySignatureIntent(data, Blockchain.EOS); // alternatively Blockchain.TELOS
+    startActivityForResult(intent, REQUEST_CODE_ARBITRARY_SIGNATURE );
+  }
+
+  // Results will be returned in this callback
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+      super.onActivityResult(requestCode, resultCode, data);
+
+      ...
+
+      if (requestCode == REQUEST_CODE_WOMBAT_SIGNATURE) {
+            String signature = Wombat.getArbitrarySignatureResultFromIntent(data);
+            if (signature != null) {
+                // TODO verify signature e.g. check if ecrecover(data, signature) == expectedPublicKey
+            }
+      }
+  }
+}
+```
+
