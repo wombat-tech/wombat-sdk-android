@@ -4,18 +4,28 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import java.util.ArrayList;
-
-import static io.getwombat.androidsdk.Constants.*;
+import static io.getwombat.androidsdk.Constants.ARBITRARY_SIGNATURE_ACTIVITY_CLASS;
+import static io.getwombat.androidsdk.Constants.EXTRA_BLOCKCHAIN;
+import static io.getwombat.androidsdk.Constants.EXTRA_DATA;
+import static io.getwombat.androidsdk.Constants.EXTRA_EOS_ACCOUNT_NAME;
+import static io.getwombat.androidsdk.Constants.EXTRA_EOS_PUBLIC_KEY;
+import static io.getwombat.androidsdk.Constants.EXTRA_JSON_ACTIONS;
+import static io.getwombat.androidsdk.Constants.EXTRA_MODIFIABLE;
+import static io.getwombat.androidsdk.Constants.EXTRA_SERIALIZED_TRANSACTION;
+import static io.getwombat.androidsdk.Constants.EXTRA_SIGNATURE;
+import static io.getwombat.androidsdk.Constants.EXTRA_SIGNATURES;
+import static io.getwombat.androidsdk.Constants.LOGIN_ACTIVITY_CLASS;
+import static io.getwombat.androidsdk.Constants.SIGNATURE_ACTIVITY_CLASS;
+import static io.getwombat.androidsdk.Constants.WOMBAT_PACKAGE;
 
 public class Wombat {
 
     /**
      * Check if Wombat is currently available on this device
+     *
      * @param context a context object, e.g. an {@link android.app.Activity} or the application context
      * @return whether the Wombat app is available
      */
@@ -123,6 +133,18 @@ public class Wombat {
         return getActionListSignIntent(actionsJson, Blockchain.EOS);
     }
 
+
+    public static Intent getArbitrarySignatureIntent(@NonNull String data, Blockchain blockchain) throws IllegalArgumentException {
+        if (data == null) {
+            throw new IllegalArgumentException("Data must not be null");
+        }
+        Intent launchIntent = new Intent();
+        launchIntent.setComponent(new ComponentName(WOMBAT_PACKAGE, ARBITRARY_SIGNATURE_ACTIVITY_CLASS));
+        launchIntent.putExtra(EXTRA_BLOCKCHAIN, blockchain.name());
+        launchIntent.putExtra(EXTRA_DATA, data);
+        return launchIntent;
+    }
+
     /**
      * Obtain the result after using {@link #getActionListSignIntent(String)} or {@link Wombat#getTransactionSignIntent(String)}
      *
@@ -151,5 +173,11 @@ public class Wombat {
         String publicKey = intent.getStringExtra(EXTRA_EOS_PUBLIC_KEY);
         if (accountName == null || publicKey == null) return null;
         return new LoginResult(accountName, publicKey);
+    }
+
+    @Nullable
+    public static String getArbitrarySignatureResultFromIntent(Intent intent) {
+        if (intent == null) return null;
+        return intent.getStringExtra(EXTRA_SIGNATURE);
     }
 }

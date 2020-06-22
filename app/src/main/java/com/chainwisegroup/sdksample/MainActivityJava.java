@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,11 +23,13 @@ import io.getwombat.androidsdk.Wombat;
 public class MainActivityJava extends AppCompatActivity {
     static final int REQUEST_CODE_WOMBAT_LOGIN = 1;
     static final int REQUEST_CODE_WOMBAT_SIGNATURE = 2;
+    static final int REQUEST_CODE_ARBITRARY_SIGNATURE = 3;
 
     LoginResult userInfo = null;
 
     Button loginButton;
     Button requestTransferButton;
+    Button arbitrarySigButton;
     TextView nameText;
     TextView pubkeyText;
 
@@ -36,6 +39,7 @@ public class MainActivityJava extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         loginButton = findViewById(R.id.login_button);
         requestTransferButton = findViewById(R.id.request_transfer_button);
+        arbitrarySigButton = findViewById(R.id.button_arbitrary_signature);
         nameText = findViewById(R.id.name_text);
         pubkeyText = findViewById(R.id.pubkey_text);
 
@@ -45,7 +49,12 @@ public class MainActivityJava extends AppCompatActivity {
                 requestTransfer();
             }
         });
-
+        arbitrarySigButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestArbitrarySignature();
+            }
+        });
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,6 +75,13 @@ public class MainActivityJava extends AppCompatActivity {
             Intent playStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(wombatLink));
             startActivity(playStoreIntent);
         }
+    }
+
+    void requestArbitrarySignature(){
+//        String toSign = "foo";
+        String toSign = getString(R.string.lorem);
+        Intent intent = Wombat.getArbitrarySignatureIntent(toSign, Blockchain.EOS);
+        startActivityForResult(intent, REQUEST_CODE_ARBITRARY_SIGNATURE );
     }
 
     void requestTransfer() {
@@ -122,6 +138,15 @@ public class MainActivityJava extends AppCompatActivity {
                 List<String> signatures = result.getSignatures();
                 String serializedTransaction = result.getSerializedTransaction(); // might differ from the requested transaction if you used Wombat.getTransactionSignIntent with modifiable = true
                 broadcastTransaction(serializedTransaction, signatures);
+            }
+        }
+
+        if (requestCode == REQUEST_CODE_ARBITRARY_SIGNATURE) {
+            String signature = Wombat.getArbitrarySignatureResultFromIntent(data);
+            if (signature != null) {
+                Toast.makeText(this, "GOT SIGNATURE", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "GOT NO SIGNATURE", Toast.LENGTH_SHORT).show();
             }
         }
     }
