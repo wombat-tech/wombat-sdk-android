@@ -73,6 +73,49 @@ public class MyActivity extends Activity {
 }
 ```
 
+Wombat does support authenticating the public key the same way scatter does when using the authenticate(nonce, data) function.\
+To use this feature, pass an additional `AuthenticateOptions` object to `getLoginIntent`\
+\
+The signature is included in the `LoginResult` you can obtain in `onActivityResult`.\
+Since this functionality is not included in older versions of Wombat, make sure to check for a null value.
+
+```java
+public class MyActivity extends Activity {
+
+  // This can be any integer, only used to distinguish the cases in 'onActivityResult'
+  static int REQUEST_CODE_WOMBAT_LOGIN = 1;
+
+  // Called to initiate the login process
+  void loginWithWombat() {
+    Intent loginIntent = Wombat.getLoginIntent(Blockchain.EOS, new AuthenticateOptions("a12charnonce","any data payload"));
+    startActivityForResult(loginIntent, REQUEST_CODE_WOMBAT_LOGIN);
+  }
+
+  // Results will be returned in this callback
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+      super.onActivityResult(requestCode, resultCode, data);
+
+      if (requestCode == REQUEST_CODE_WOMBAT_LOGIN) {
+          if (resultCode == Activity.RESULT_OK) {
+              LoginResult loginResult = Wombat.getLoginResultFromIntent(data);
+              String eosName = loginResult.getEosAccountName();
+              String publicKey = loginResult.getPublicKey();
+              String signature = loginResult.getAuthenticateSignature();
+              // Be aware that the signature can be null. This is the case when a) No AuthenticateOptions were passed to the login or b) The user is running an old Wombat version
+              if (signature != null) {
+                // TODO
+              }
+
+          }
+
+          return;
+      }
+  }
+}
+```
+
+
 #### Transaction signing
 Wombat supports 2 different formats to sign transactions.
 
