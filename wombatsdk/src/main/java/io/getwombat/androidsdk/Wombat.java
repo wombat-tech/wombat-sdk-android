@@ -4,10 +4,15 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
+
 import static io.getwombat.androidsdk.Constants.ARBITRARY_SIGNATURE_ACTIVITY_CLASS;
+import static io.getwombat.androidsdk.Constants.EXTRA_AUTH_DATA;
+import static io.getwombat.androidsdk.Constants.EXTRA_AUTH_NONCE;
 import static io.getwombat.androidsdk.Constants.EXTRA_BLOCKCHAIN;
 import static io.getwombat.androidsdk.Constants.EXTRA_DATA;
 import static io.getwombat.androidsdk.Constants.EXTRA_EOS_ACCOUNT_NAME;
@@ -39,13 +44,26 @@ public class Wombat {
 
     /**
      * @param blockchain which chain to use, currently supported are EOS and TELOS
-     * @return an Intent to be used with {@link android.app.Activity#startActivityForResult(Intent, Integer)}
+     * @return an Intent to be used with {@link android.app.Activity#startActivityForResult(Intent, int)}}
      */
     @NonNull
     public static Intent getLoginIntent(Blockchain blockchain) {
+        return getLoginIntent(blockchain, null);
+    }
+
+    /**
+     * @param blockchain which chain to use, currently supported are EOS and TELOS
+     * @return an Intent to be used with {@link android.app.Activity#startActivityForResult(Intent, int)}
+     */
+    @NonNull
+    public static Intent getLoginIntent(Blockchain blockchain, AuthenticateOptions authOptions) {
         Intent intent = new Intent();
         intent.setComponent(new ComponentName(WOMBAT_PACKAGE, LOGIN_ACTIVITY_CLASS));
         intent.putExtra(EXTRA_BLOCKCHAIN, blockchain.name());
+        if (authOptions != null) {
+            intent.putExtra(EXTRA_AUTH_NONCE, authOptions.getNonce());
+            intent.putExtra(EXTRA_AUTH_DATA, authOptions.getData());
+        }
         return intent;
     }
 
@@ -55,7 +73,7 @@ public class Wombat {
      */
     @NonNull
     public static Intent getLoginIntent() {
-        return getLoginIntent(Blockchain.EOS);
+        return getLoginIntent(Blockchain.EOS, null);
     }
 
     /**
@@ -80,7 +98,7 @@ public class Wombat {
     }
 
     /**
-     * @see Wombat#getTransactionSignIntent(String, boolean, Blockchain)
+     * @see Wombat#getTransactionSignIntent(String, Blockchain, boolean)
      * defaults to {@link Blockchain#EOS}
      */
     @NonNull
@@ -93,22 +111,22 @@ public class Wombat {
      *
      * @param actionsJson the json representing an array of actions.
      *                    [
-     *                      {
-     *                          "account": "eosio.token",
-     *                          "name": "transfer",
-     *                          "authorization": [
-     *                              {
-     *                                  "actor": "eosaccntname",
-     *                                  "permission": "active"
-     *                              }
-     *                          ],
-     *                          "data": {
-     *                              "from": "eosaccntname",
-     *                              "memo": "...",
-     *                              "quantity": "1.0000 EOS",
-     *                              "to": "otheraccount"
-     *                          }
-     *                      }
+     *                    {
+     *                    "account": "eosio.token",
+     *                    "name": "transfer",
+     *                    "authorization": [
+     *                    {
+     *                    "actor": "eosaccntname",
+     *                    "permission": "active"
+     *                    }
+     *                    ],
+     *                    "data": {
+     *                    "from": "eosaccntname",
+     *                    "memo": "...",
+     *                    "quantity": "1.0000 EOS",
+     *                    "to": "otheraccount"
+     *                    }
+     *                    }
      *                    ]
      * @param blockchain  which blockchain this transaction is intended for
      * @return an Intent to be used with @link{android.app.Activity.startActivityForResult(Intent,Integer)}
@@ -146,7 +164,7 @@ public class Wombat {
     }
 
     /**
-     * Obtain the result after using {@link #getActionListSignIntent(String)} or {@link Wombat#getTransactionSignIntent(String)}
+     * Obtain the result after using {@link #getActionListSignIntent(String)} or {@link Wombat#getTransactionSignIntent(String, boolean)}
      *
      * @param intent the data intent obtained in {@link android.app.Activity#onActivityResult(int, int, Intent)}
      * @return The serialized transaction and signatures on success, null on error
@@ -171,8 +189,9 @@ public class Wombat {
         if (intent == null) return null;
         String accountName = intent.getStringExtra(EXTRA_EOS_ACCOUNT_NAME);
         String publicKey = intent.getStringExtra(EXTRA_EOS_PUBLIC_KEY);
+        String authenticateSignature = intent.getStringExtra(EXTRA_SIGNATURE);
         if (accountName == null || publicKey == null) return null;
-        return new LoginResult(accountName, publicKey);
+        return new LoginResult(accountName, publicKey, authenticateSignature);
     }
 
     @Nullable
