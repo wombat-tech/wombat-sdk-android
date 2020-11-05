@@ -27,6 +27,11 @@ android {
 
         }
 
+        internal {
+            dimension "network"
+
+        }
+
         net_test {
             dimension "network"
         }
@@ -35,6 +40,10 @@ android {
     sourceSets{
         net_main {
             java.srcDirs = ['src/mainnet/java']
+        }
+
+        internal {
+            java.srcDirs = ['src/internal/java']
         }
 
         net_test{
@@ -63,7 +72,12 @@ task buildTest{
 
 }
 
+task buildInternal{
+    dependsOn 'assembleInternalRelease'
+
+}
 task buildAll{
     dependsOn 'assembleNet_mainRelease'
     dependsOn 'assembleNet_testRelease'
+    dependsOn 'assembleInternalRelease'
 }
