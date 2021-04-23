@@ -11,8 +11,6 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 import static io.getwombat.androidsdk.Constants.ARBITRARY_SIGNATURE_ACTIVITY_CLASS;
-import static io.getwombat.androidsdk.Constants.EXTRA_AUTH_DATA;
-import static io.getwombat.androidsdk.Constants.EXTRA_AUTH_NONCE;
 import static io.getwombat.androidsdk.Constants.EXTRA_BLOCKCHAIN;
 import static io.getwombat.androidsdk.Constants.EXTRA_DATA;
 import static io.getwombat.androidsdk.Constants.EXTRA_EOS_ACCOUNT_NAME;
@@ -42,28 +40,11 @@ public class Wombat {
         }
     }
 
-    /**
-     * @param blockchain which chain to use, currently supported are EOS and TELOS
-     * @return an Intent to be used with {@link android.app.Activity#startActivityForResult(Intent, int)}}
-     */
     @NonNull
     public static Intent getLoginIntent(Blockchain blockchain) {
-        return getLoginIntent(blockchain, null);
-    }
-
-    /**
-     * @param blockchain which chain to use, currently supported are EOS and TELOS
-     * @return an Intent to be used with {@link android.app.Activity#startActivityForResult(Intent, int)}
-     */
-    @NonNull
-    public static Intent getLoginIntent(Blockchain blockchain, AuthenticateOptions authOptions) {
         Intent intent = new Intent();
         intent.setComponent(new ComponentName(WOMBAT_PACKAGE, LOGIN_ACTIVITY_CLASS));
         intent.putExtra(EXTRA_BLOCKCHAIN, blockchain.name());
-        if (authOptions != null) {
-            intent.putExtra(EXTRA_AUTH_NONCE, authOptions.getNonce());
-            intent.putExtra(EXTRA_AUTH_DATA, authOptions.getData());
-        }
         return intent;
     }
 
@@ -73,7 +54,7 @@ public class Wombat {
      */
     @NonNull
     public static Intent getLoginIntent() {
-        return getLoginIntent(Blockchain.EOS, null);
+        return getLoginIntent(Blockchain.EOS);
     }
 
     /**
@@ -189,9 +170,8 @@ public class Wombat {
         if (intent == null) return null;
         String accountName = intent.getStringExtra(EXTRA_EOS_ACCOUNT_NAME);
         String publicKey = intent.getStringExtra(EXTRA_EOS_PUBLIC_KEY);
-        String authenticateSignature = intent.getStringExtra(EXTRA_SIGNATURE);
         if (accountName == null || publicKey == null) return null;
-        return new LoginResult(accountName, publicKey, authenticateSignature);
+        return new LoginResult(accountName, publicKey);
     }
 
     @Nullable

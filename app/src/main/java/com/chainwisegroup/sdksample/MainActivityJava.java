@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.List;
 
-import io.getwombat.androidsdk.AuthenticateOptions;
 import io.getwombat.androidsdk.Blockchain;
 import io.getwombat.androidsdk.LoginResult;
 import io.getwombat.androidsdk.TransactionSignResult;
@@ -69,20 +68,20 @@ public class MainActivityJava extends AppCompatActivity {
     //wrap it in this Wombat.isAvailable(Context)  is already in the provided SDK
     void loginWithWombat() {
         if (Wombat.isAvailable(this)) {
-            Intent loginIntent = Wombat.getLoginIntent(Blockchain.TELOS, new AuthenticateOptions("123456789101","somerandomdata..."));
+            Intent loginIntent = Wombat.getLoginIntent(Blockchain.EOS);
             startActivityForResult(loginIntent, REQUEST_CODE_WOMBAT_LOGIN);
         } else {
-            String wombatLink = "https://play.google.com/store/apps/details?id=io.getwombat.android&referrer=utm_source%3Deos_knights_android%26utm_medium%3Dwallet_choice%26utm_campaign%3Deos_knights%26anid%3Dadmob";
+            String wombatLink = "https://play.google.com/store/apps/details?id=io.getwombat.android";
             Intent playStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(wombatLink));
             startActivity(playStoreIntent);
         }
     }
 
-    void requestArbitrarySignature(){
+    void requestArbitrarySignature() {
 //        String toSign = "foo";
         String toSign = getString(R.string.lorem);
         Intent intent = Wombat.getArbitrarySignatureIntent(toSign, Blockchain.EOS);
-        startActivityForResult(intent, REQUEST_CODE_ARBITRARY_SIGNATURE );
+        startActivityForResult(intent, REQUEST_CODE_ARBITRARY_SIGNATURE);
     }
 
     void requestTransfer() {
@@ -125,8 +124,6 @@ public class MainActivityJava extends AppCompatActivity {
                 LoginResult loginResult = Wombat.getLoginResultFromIntent(data);
                 String eosName = loginResult.getEosAccountName();
                 String publicKey = loginResult.getPublicKey();
-                String signature = loginResult.getAuthenticateSignature();
-                Log.d("LOGIN","Signature: "+signature);
                 nameText.setText(eosName);
                 pubkeyText.setText(publicKey);
                 requestTransferButton.setEnabled(true);

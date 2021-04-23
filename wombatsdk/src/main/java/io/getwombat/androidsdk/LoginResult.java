@@ -1,7 +1,6 @@
 package io.getwombat.androidsdk;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class LoginResult {
     @NonNull
@@ -9,15 +8,10 @@ public class LoginResult {
     @NonNull
     private String publicKey;
 
-    @Nullable
-    private String authenticateSignature;
-
-    LoginResult(@NonNull String eosAccountName, @NonNull String publicKey, @Nullable String authenticateSignature) {
+    LoginResult(@NonNull String eosAccountName, @NonNull String publicKey) {
         this.eosAccountName = eosAccountName;
         this.publicKey = publicKey;
-        this.authenticateSignature = authenticateSignature;
     }
-
 
     @NonNull
     public String getEosAccountName() {
@@ -27,10 +21,5 @@ public class LoginResult {
     @NonNull
     public String getPublicKey() {
         return this.publicKey;
-    }
-
-    @Nullable
-    public String getAuthenticateSignature() {
-        return this.authenticateSignature;
     }
 }

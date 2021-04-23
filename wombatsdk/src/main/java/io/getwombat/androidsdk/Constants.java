@@ -11,8 +11,6 @@ class Constants {
     static String EXTRA_EOS_ACCOUNT_NAME = "eos_account_name";
     static String EXTRA_EOS_PUBLIC_KEY = "eos_public_key";
     static String EXTRA_BLOCKCHAIN = "blockchain";
-    static String EXTRA_AUTH_NONCE = "auth_nonce";
-    static String EXTRA_AUTH_DATA = "auth_data";
     static String EXTRA_DATA = "data";
 
     static String LOGIN_ACTIVITY_CLASS = "io.getwombat.android.sdk.activities.SDKLoginActivity";
