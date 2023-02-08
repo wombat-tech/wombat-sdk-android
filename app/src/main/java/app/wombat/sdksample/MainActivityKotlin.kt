@@ -1,11 +1,11 @@
-package com.chainwisegroup.sdksample
+package app.wombat.sdksample
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import io.getwombat.androidsdk.LoginResult
-import io.getwombat.androidsdk.Wombat
+import app.wombat.androidsdk.LoginResult
+import app.wombat.androidsdk.Wombat
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivityKotlin : AppCompatActivity() {

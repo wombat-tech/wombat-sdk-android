@@ -1,16 +1,18 @@
 apply plugin: 'com.android.library'
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
+        def appPackage = "io.getwombat.android"
+        buildConfigField "String", "WOMBAT_APP_PACKAGE", "\"${appPackage}\""
+        manifestPlaceholders = [WOMBAT_APP_PACKAGE: appPackage]
     }
 
     buildTypes {
@@ -19,66 +21,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
-    flavorDimensions "network"
-    productFlavors {
-        net_main {
-            dimension "network"
-            manifestPlaceholders = [wombat_package: "io.getwombat.android"]
-        }
-
-        internal {
-            dimension "network"
-            manifestPlaceholders = [wombat_package: "io.getwombat.android.internal"]
-        }
-
-        net_test {
-            dimension "network"
-            manifestPlaceholders = [wombat_package: "io.getwombat.android.jungle"]
-        }
-    }
-
-    sourceSets{
-        net_main {
-            java.srcDirs = ['src/mainnet/java']
-        }
-
-        internal {
-            java.srcDirs = ['src/internal/java']
-        }
-
-        net_test{
-            java.srcDirs = ['src/testnet/java']
-        }
-
-        main.java.srcDirs += ['src/main/java']
-    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.annotation:annotation:1.1.0'
+
 }
 
 repositories {
     mavenCentral()
-}
-
-task buildMain{
-    dependsOn 'assembleNet_mainRelease'
-}
-
-task buildTest{
-    dependsOn 'assembleNet_testRelease'
-
-}
-
-task buildInternal{
-    dependsOn 'assembleInternalRelease'
-
-}
-task buildAll{
-    dependsOn 'assembleNet_mainRelease'
-    dependsOn 'assembleNet_testRelease'
-    dependsOn 'assembleInternalRelease'
 }

@@ -1,4 +1,4 @@
-package io.getwombat.androidsdk;
+package app.wombat.androidsdk;
 
 public enum Blockchain {
     EOS, TELOS

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.chainwisegroup.sdksample">
+    package="app.wombat.sdksample"
+    >
     <application
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
@@ -8,7 +9,8 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name="com.chainwisegroup.sdksample.MainActivityJava">
+        <activity android:name="app.wombat.sdksample.MainActivityJava"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

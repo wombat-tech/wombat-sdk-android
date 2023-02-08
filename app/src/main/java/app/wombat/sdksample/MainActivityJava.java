@@ -1,4 +1,4 @@
-package com.chainwisegroup.sdksample;
+package app.wombat.sdksample;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,17 +13,25 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.math.BigInteger;
 import java.util.List;
 
-import io.getwombat.androidsdk.Blockchain;
-import io.getwombat.androidsdk.LoginResult;
-import io.getwombat.androidsdk.TransactionSignResult;
-import io.getwombat.androidsdk.Wombat;
+import app.wombat.androidsdk.Blockchain;
+import app.wombat.androidsdk.evm.EvmChainIds;
+import app.wombat.androidsdk.evm.EvmGetAddress;
+import app.wombat.androidsdk.evm.EvmPersonalSign;
+import app.wombat.androidsdk.evm.EvmSignTransaction;
+import app.wombat.androidsdk.evm.EvmSignTypedData;
+import app.wombat.androidsdk.LoginResult;
+import app.wombat.androidsdk.TransactionSignResult;
+import app.wombat.androidsdk.Wombat;
+import app.wombat.androidsdk.WombatSdkResult;
 
 public class MainActivityJava extends AppCompatActivity {
     static final int REQUEST_CODE_WOMBAT_LOGIN = 1;
     static final int REQUEST_CODE_WOMBAT_SIGNATURE = 2;
     static final int REQUEST_CODE_ARBITRARY_SIGNATURE = 3;
+    static final int REQUEST_CODE_GET_ADDRESS = 4;
 
     LoginResult userInfo = null;
 
@@ -32,6 +40,7 @@ public class MainActivityJava extends AppCompatActivity {
     Button arbitrarySigButton;
     TextView nameText;
     TextView pubkeyText;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,12 +52,6 @@ public class MainActivityJava extends AppCompatActivity {
         nameText = findViewById(R.id.name_text);
         pubkeyText = findViewById(R.id.pubkey_text);
 
-        requestTransferButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requestTransfer();
-            }
-        });
         arbitrarySigButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,11 +61,13 @@ public class MainActivityJava extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loginWithWombat();
+                requestEvmLogin();
             }
         });
 
         requestTransferButton.setEnabled(false);
+
+        loginButton.setEnabled(Wombat.isAvailable(this) && Wombat.evmSupported(this));
     }
 
     //wrap it in this Wombat.isAvailable(Context)  is already in the provided SDK
@@ -82,6 +87,18 @@ public class MainActivityJava extends AppCompatActivity {
         String toSign = getString(R.string.lorem);
         Intent intent = Wombat.getArbitrarySignatureIntent(toSign, Blockchain.EOS);
         startActivityForResult(intent, REQUEST_CODE_ARBITRARY_SIGNATURE);
+    }
+
+    void requestEvmLogin(){
+        EvmGetAddress.Request request = new EvmGetAddress.Request(EvmChainIds.POLYGON);
+        Intent launchIntent = request.createIntent();
+        startActivityForResult(launchIntent, REQUEST_CODE_GET_ADDRESS);
+    }
+
+    void requestEvmSignTypedData(String userAddress) {
+        String message = "{\"types\":{\"EIP712Domain\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"version\",\"type\":\"string\"},{\"name\":\"chainId\",\"type\":\"uint256\"},{\"name\":\"verifyingContract\",\"type\":\"address\"}],\"Person\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"wallet\",\"type\":\"address\"}],\"Mail\":[{\"name\":\"from\",\"type\":\"Person\"},{\"name\":\"to\",\"type\":\"Person\"},{\"name\":\"contents\",\"type\":\"string\"}]},\"primaryType\":\"Mail\",\"domain\":{\"name\":\"Ether Mail\",\"version\":\"1\",\"chainId\":1,\"verifyingContract\":\"0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC\"},\"message\":{\"from\":{\"name\":\"Cow\",\"wallet\":\"0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826\"},\"to\":{\"name\":\"Bob\",\"wallet\":\"0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB\"},\"contents\":\"Hello, Bob!\"}}";
+        EvmSignTypedData.Request request = new EvmSignTypedData.Request(userAddress, message,EvmChainIds.POLYGON);
+        startActivityForResult(request.createIntent(), 134);
     }
 
     void requestTransfer() {
@@ -105,6 +122,21 @@ public class MainActivityJava extends AppCompatActivity {
                 "            ]";
         Intent signIntent = Wombat.getActionListSignIntent(jsonActions);
         startActivityForResult(signIntent, REQUEST_CODE_WOMBAT_SIGNATURE);
+    }
+
+    void requestMaticTransfer(String  userAddress){
+
+        String to = "0xFdC17DD76FC08eB790f0e9AC7748B90B14A146EC";
+        BigInteger value = new BigInteger("1000000000000000000"); // 1 MATIC in Wei
+        String data = ""; // the transaction data, empty for a simple MATIC transfer
+        EvmSignTransaction.Request request = new EvmSignTransaction.Request(userAddress, to,value,data, EvmChainIds.POLYGON);
+        startActivityForResult(request.createIntent(), 133);
+    }
+
+    void requestPersonalSign(String  userAddress){
+        String message = "foobar";
+        EvmPersonalSign.Request request = new EvmPersonalSign.Request(userAddress, message, EvmChainIds.POLYGON);
+        startActivityForResult(request.createIntent(), 1332);
     }
 
     void broadcastTransaction(String serializedTransaction, List<String> signatures) {
@@ -147,6 +179,31 @@ public class MainActivityJava extends AppCompatActivity {
                 Toast.makeText(this, "GOT SIGNATURE", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "GOT NO SIGNATURE", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if(requestCode == REQUEST_CODE_GET_ADDRESS){
+            WombatSdkResult<EvmGetAddress.Result> result = EvmGetAddress.Result.fromIntent(resultCode, data);
+            if(result.isSuccess()){
+                final String address = result.getResult().getAddress();
+                Toast.makeText(this, "Received address: "+address, Toast.LENGTH_SHORT).show();
+                requestTransferButton.setEnabled(true);
+                requestTransferButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        requestMaticTransfer(address);
+                    }
+                });
+
+                arbitrarySigButton.setEnabled(true);
+                arbitrarySigButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        requestEvmSignTypedData(address);
+                    }
+                });
+            }else{
+                Toast.makeText(this, "Error :( ", Toast.LENGTH_SHORT).show();
             }
         }
     }

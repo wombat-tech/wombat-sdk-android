@@ -209,3 +209,129 @@ public class MyActivity extends Activity {
 }
 ```
 
+# EVM Support
+As of Wombat version 2.13.0 we support several methods to interact with EVM based blockchains\
+Currenty we support Ethereum, Polygon, BNB, Heco, Fantom and Avalanche.
+
+### Ensuring EVM support
+Since older versions do not support these sdk methods, it is adviced to check the support beforehand:
+
+```java
+public class MyActivity extends Activity {
+
+  boolean isWombatAvailable() {
+      return Wombat.isAvailable(this) && Wombat.evmSupported(this);
+  }
+
+}
+```
+### Getting the user's address
+
+```java
+public class MyActivity extends Activity {
+
+    static int REQUEST_CODE_WOMBAT_GET_ADDRESS = 1;
+
+    void requestEvmLogin() {
+        EvmGetAddress.Request request = new EvmGetAddress.Request(EvmChainIds.POLYGON);
+        startActivityForResult(request.createIntent(), REQUEST_CODE_WOMBAT_GET_ADDRESS);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_WOMBAT_GET_ADDRESS) {
+            WombatSdkResult<EvmGetAddress.Result> result = EvmGetAddress.Result.fromIntent(resultCode, data);
+            if (result.isSuccess()) {
+                String userAddress = result.getResult().getAddress();
+            }
+        }
+    }
+}
+```
+
+### Signing transactions
+
+```java
+public class MyActivity extends Activity {
+
+    static int REQUEST_CODE_WOMBAT_TRANSFER_MATIC = 2;
+
+    // address must be obtained via EvmGetAddress request
+    void requestMaticTransfer(String userAddress) {
+        String to = "0xdeadbeef";
+        BigInteger value = new BigInteger("1000000000000000000"); // 1 MATIC in Wei
+        String data = ""; // the transaction data, empty for a simple MATIC transfer
+        EvmSignTransaction.Request request = new EvmSignTransaction.Request(userAddress, to,value,data, EvmChainIds.POLYGON);
+        startActivityForResult(request.createIntent(), REQUEST_CODE_WOMBAT_TRANSFER_MATIC);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_WOMBAT_TRANSFER_MATIC) {
+            WombatSdkResult<EvmSignTransaction.Result> result = EvmSignTransaction.Result.fromIntent(resultCode, data);
+            if (result.isSuccess()) {
+                String transactionHash = result.getResult().getHash();
+            }
+        }
+    }
+}
+```
+
+
+### Personal Sign
+
+```java
+public class MyActivity extends Activity {
+
+    static int REQUEST_CODE_WOMBAT_PERSONAL_SIGN = 3;
+
+    // address must be obtained via EvmGetAddress request
+    void requestPersonalSign(String userAddress) {
+        String message = "foobar";
+        EvmPersonalSign.Request request = new EvmPersonalSign.Request(userAddress, message, EvmChainIds.POLYGON);
+        startActivityForResult(request.createIntent(), REQUEST_CODE_WOMBAT_PERSONAL_SIGN);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_WOMBAT_PERSONAL_SIGN) {
+            WombatSdkResult<EvmPersonalSign.Result> result = EvmPersonalSign.Result.fromIntent(resultCode, data);
+            if (result.isSuccess()) {
+                String signature = result.getResult().getSignature();
+            }
+        }
+    }
+}
+```
+
+### Signing typed data
+Wombat supports signing typed data following the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) v4 standard. This is equivalent to Metamasks `signTypedData_v4` request.
+
+```java
+public class MyActivity extends Activity {
+
+    static int REQUEST_CODE_WOMBAT_SIGN_TYPED_DATA = 4;
+
+    // address must be obtained via EvmGetAddress request
+    void requestPersonalSign(String userAddress) {
+        // Sample data from EIP
+        String message = "{\"types\":{\"EIP712Domain\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"version\",\"type\":\"string\"},{\"name\":\"chainId\",\"type\":\"uint256\"},{\"name\":\"verifyingContract\",\"type\":\"address\"}],\"Person\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"wallet\",\"type\":\"address\"}],\"Mail\":[{\"name\":\"from\",\"type\":\"Person\"},{\"name\":\"to\",\"type\":\"Person\"},{\"name\":\"contents\",\"type\":\"string\"}]},\"primaryType\":\"Mail\",\"domain\":{\"name\":\"Ether Mail\",\"version\":\"1\",\"chainId\":1,\"verifyingContract\":\"0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC\"},\"message\":{\"from\":{\"name\":\"Cow\",\"wallet\":\"0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826\"},\"to\":{\"name\":\"Bob\",\"wallet\":\"0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB\"},\"contents\":\"Hello, Bob!\"}}";
+        EvmSignTypedData.Request request = new EvmSignTypedData.Request(userAddress, message, EvmChainIds.POLYGON);
+        startActivityForResult(request.createIntent(), REQUEST_CODE_WOMBAT_SIGN_TYPED_DATA);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_WOMBAT_SIGN_TYPED_DATA) {
+            WombatSdkResult<EvmSignTypedData.Result> result = EvmSignTypedData.Result.fromIntent(resultCode, data);
+            if (result.isSuccess()) {
+                String signature = result.getResult().getSignature();
+            }
+        }
+    }
+}
+```

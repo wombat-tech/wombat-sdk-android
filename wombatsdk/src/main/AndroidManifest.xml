@@ -1,11 +1,7 @@
-<manifest package="io.getwombat.androidsdk"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="app.wombat.androidsdk">
+
     <queries>
-        <package android:name="${wombat_package}"/>
+        <package android:name="${WOMBAT_APP_PACKAGE}" />
     </queries>
-    <application
-    >
-
-
-    </application>
 </manifest>

@@ -1,28 +1,26 @@
-package io.getwombat.androidsdk;
+package app.wombat.androidsdk;
+
+import static app.wombat.androidsdk.Constants.ARBITRARY_SIGNATURE_ACTIVITY_CLASS;
+import static app.wombat.androidsdk.Constants.EXTRA_BLOCKCHAIN;
+import static app.wombat.androidsdk.Constants.EXTRA_DATA;
+import static app.wombat.androidsdk.Constants.EXTRA_EOS_ACCOUNT_NAME;
+import static app.wombat.androidsdk.Constants.EXTRA_EOS_PUBLIC_KEY;
+import static app.wombat.androidsdk.Constants.EXTRA_JSON_ACTIONS;
+import static app.wombat.androidsdk.Constants.EXTRA_MODIFIABLE;
+import static app.wombat.androidsdk.Constants.EXTRA_SERIALIZED_TRANSACTION;
+import static app.wombat.androidsdk.Constants.EXTRA_SIGNATURE;
+import static app.wombat.androidsdk.Constants.EXTRA_SIGNATURES;
+import static app.wombat.androidsdk.Constants.LOGIN_ACTIVITY_CLASS;
+import static app.wombat.androidsdk.Constants.SIGNATURE_ACTIVITY_CLASS;
+import static app.wombat.androidsdk.Constants.WOMBAT_PACKAGE;
 
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import java.util.ArrayList;
-
-import static io.getwombat.androidsdk.Constants.ARBITRARY_SIGNATURE_ACTIVITY_CLASS;
-import static io.getwombat.androidsdk.Constants.EXTRA_BLOCKCHAIN;
-import static io.getwombat.androidsdk.Constants.EXTRA_DATA;
-import static io.getwombat.androidsdk.Constants.EXTRA_EOS_ACCOUNT_NAME;
-import static io.getwombat.androidsdk.Constants.EXTRA_EOS_PUBLIC_KEY;
-import static io.getwombat.androidsdk.Constants.EXTRA_JSON_ACTIONS;
-import static io.getwombat.androidsdk.Constants.EXTRA_MODIFIABLE;
-import static io.getwombat.androidsdk.Constants.EXTRA_SERIALIZED_TRANSACTION;
-import static io.getwombat.androidsdk.Constants.EXTRA_SIGNATURE;
-import static io.getwombat.androidsdk.Constants.EXTRA_SIGNATURES;
-import static io.getwombat.androidsdk.Constants.LOGIN_ACTIVITY_CLASS;
-import static io.getwombat.androidsdk.Constants.SIGNATURE_ACTIVITY_CLASS;
-import static io.getwombat.androidsdk.Constants.WOMBAT_PACKAGE;
 
 public class Wombat {
 
@@ -32,7 +30,7 @@ public class Wombat {
      * @param context a context object, e.g. an {@link android.app.Activity} or the application context
      * @return whether the Wombat app is available
      */
-    public static Boolean isAvailable(Context context) {
+    public static boolean isAvailable(Context context) {
         try {
             return context.getPackageManager().getApplicationInfo(WOMBAT_PACKAGE, 0).enabled;
         } catch (PackageManager.NameNotFoundException e) {
@@ -40,7 +38,15 @@ public class Wombat {
         }
     }
 
-    @NonNull
+    public static boolean evmSupported(Context context) {
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(WOMBAT_PACKAGE, 0);
+            return info.applicationInfo.enabled && info.versionCode > 27931156;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
     public static Intent getLoginIntent(Blockchain blockchain) {
         Intent intent = new Intent();
         intent.setComponent(new ComponentName(WOMBAT_PACKAGE, LOGIN_ACTIVITY_CLASS));
@@ -52,7 +58,7 @@ public class Wombat {
      * @see Wombat#getLoginIntent(Blockchain)
      * defaults to {@link Blockchain#EOS}
      */
-    @NonNull
+
     public static Intent getLoginIntent() {
         return getLoginIntent(Blockchain.EOS);
     }
@@ -68,8 +74,8 @@ public class Wombat {
      * @return the intent which an activity needs to send
      */
 
-    @NonNull
-    public static Intent getTransactionSignIntent(@NonNull String serializedTransaction, Blockchain blockchain, boolean modifiable) {
+
+    public static Intent getTransactionSignIntent(String serializedTransaction, Blockchain blockchain, boolean modifiable) {
         Intent intent = new Intent();
         intent.setComponent(new ComponentName(WOMBAT_PACKAGE, SIGNATURE_ACTIVITY_CLASS));
         intent.putExtra(EXTRA_SERIALIZED_TRANSACTION, serializedTransaction);
@@ -82,8 +88,8 @@ public class Wombat {
      * @see Wombat#getTransactionSignIntent(String, Blockchain, boolean)
      * defaults to {@link Blockchain#EOS}
      */
-    @NonNull
-    public static Intent getTransactionSignIntent(@NonNull String serializedTransaction, boolean modifiable) {
+
+    public static Intent getTransactionSignIntent(String serializedTransaction, boolean modifiable) {
         return getTransactionSignIntent(serializedTransaction, Blockchain.EOS, modifiable);
     }
 
@@ -114,8 +120,8 @@ public class Wombat {
      * <p>
      * Results must be obtained using @link{}
      */
-    @NonNull
-    public static Intent getActionListSignIntent(@NonNull String actionsJson, Blockchain blockchain) {
+
+    public static Intent getActionListSignIntent(String actionsJson, Blockchain blockchain) {
         Intent intent = new Intent();
         intent.setComponent(new ComponentName(WOMBAT_PACKAGE, SIGNATURE_ACTIVITY_CLASS));
         intent.putExtra(EXTRA_JSON_ACTIONS, actionsJson);
@@ -127,13 +133,13 @@ public class Wombat {
      * @see Wombat#getActionListSignIntent(String, Blockchain)
      * defaults to {@link Blockchain#EOS}
      */
-    @NonNull
-    public static Intent getActionListSignIntent(@NonNull String actionsJson) {
+
+    public static Intent getActionListSignIntent(String actionsJson) {
         return getActionListSignIntent(actionsJson, Blockchain.EOS);
     }
 
 
-    public static Intent getArbitrarySignatureIntent(@NonNull String data, Blockchain blockchain) throws IllegalArgumentException {
+    public static Intent getArbitrarySignatureIntent(String data, Blockchain blockchain) throws IllegalArgumentException {
         if (data == null) {
             throw new IllegalArgumentException("Data must not be null");
         }
@@ -150,7 +156,6 @@ public class Wombat {
      * @param intent the data intent obtained in {@link android.app.Activity#onActivityResult(int, int, Intent)}
      * @return The serialized transaction and signatures on success, null on error
      */
-    @Nullable
     public static TransactionSignResult getTransactionSignResultFromIntent(Intent intent) {
         if (intent == null) return null;
         String serializedTransaction = intent.getStringExtra(EXTRA_SERIALIZED_TRANSACTION);
@@ -165,7 +170,6 @@ public class Wombat {
      * @param intent the data intent obtained in {@link android.app.Activity#onActivityResult(int, int, Intent)}
      * @return The EOS account name and public key on success, null on error
      */
-    @Nullable
     public static LoginResult getLoginResultFromIntent(Intent intent) {
         if (intent == null) return null;
         String accountName = intent.getStringExtra(EXTRA_EOS_ACCOUNT_NAME);
@@ -174,7 +178,6 @@ public class Wombat {
         return new LoginResult(accountName, publicKey);
     }
 
-    @Nullable
     public static String getArbitrarySignatureResultFromIntent(Intent intent) {
         if (intent == null) return null;
         return intent.getStringExtra(EXTRA_SIGNATURE);

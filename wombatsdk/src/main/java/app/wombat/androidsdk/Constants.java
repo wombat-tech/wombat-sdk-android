@@ -1,7 +1,7 @@
-package io.getwombat.androidsdk;
+package app.wombat.androidsdk;
 
 class Constants {
-    static String WOMBAT_PACKAGE = FlavoredConstants.WOMBAT_PACKAGE;
+    static String WOMBAT_PACKAGE = BuildConfig.WOMBAT_APP_PACKAGE;
 
     static String EXTRA_SIGNATURE = "signature";
     static String EXTRA_SIGNATURES = "signatures";
@@ -16,4 +16,6 @@ class Constants {
     static String LOGIN_ACTIVITY_CLASS = "io.getwombat.android.sdk.activities.SDKLoginActivity";
     static String SIGNATURE_ACTIVITY_CLASS = "io.getwombat.android.sdk.activities.SDKSignatureRequestActivity";
     static String ARBITRARY_SIGNATURE_ACTIVITY_CLASS = "io.getwombat.android.sdk.activities.SDKArbitrarySignRequestActivity";
+
+    static String SDK_ACTIVITY_CLASS = "io.getwombat.android.sdk.SdkActivity";
 }
